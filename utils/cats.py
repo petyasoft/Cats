@@ -93,9 +93,12 @@ class Cats:
         try:
             await self.client.connect()
 
+            bot = await self.client.resolve_peer('catsgang_bot')
+            app = InputBotAppShortName(bot_id=bot, short_name="join")
+            
             web_view = await self.client.invoke(RequestAppWebView(
-                peer=await self.client.resolve_peer('catsgang_bot'),
-                app=InputBotAppShortName(bot_id=await self.client.resolve_peer('catsgang_bot'), short_name="join"),
+                peer=bot,
+                app=app,
                 platform='android',
                 write_allowed=True,
                 start_param=self.ref
