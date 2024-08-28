@@ -62,7 +62,7 @@ class Cats:
     
     async def stats(self):
         await self.login()
-        resp = await self.session.get('https://cats-backend-wkejfn-production.up.railway.app/user')
+        resp = await self.session.get('https://cats-backend-wkejfn-production.up.railway.app/user',proxy=self.proxy)
         resp = await resp.json()
         await self.session.close()
         return {'id':resp['id'],'username':resp['username'],'age':resp['telegramAge'],'total':resp['totalRewards']}
@@ -78,7 +78,7 @@ class Cats:
                 'referral_code': self.ref,
             }
             
-            resp = await self.session.post("https://cats-backend-wkejfn-production.up.railway.app/user/create", params=params)
+            resp = await self.session.post("https://cats-backend-wkejfn-production.up.railway.app/user/create", params=params,proxy=self.proxy)
             resp = await resp.text()
             if 'message' in resp:
                 return False
@@ -122,7 +122,7 @@ class Cats:
         params = {
             'group':'cats'
         }
-        resp = await self.session.get('https://cats-backend-wkejfn-production.up.railway.app/tasks/user', params=params)
+        resp = await self.session.get('https://cats-backend-wkejfn-production.up.railway.app/tasks/user', params=params,proxy=self.proxy)
         resp_json = await resp.json()
         try:
             for task in resp_json['tasks']:
