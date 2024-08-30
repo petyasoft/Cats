@@ -37,7 +37,21 @@ class Cats:
         else:
             self.proxy = None
 
-        headers = {'User-Agent': UserAgent(os='android').random}
+        headers = {
+            'accept': '*/*',
+            'accept-language': 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7,bg;q=0.6,mk;q=0.5',
+            'cache-control': 'no-cache',
+            'content-type': 'application/json',
+            'pragma': 'no-cache',
+            'priority': 'u=1, i',
+            'sec-ch-ua': '"Not)A;Brand";v="99", "Google Chrome";v="122", "Chromium";v="122"',
+            'sec-ch-ua-mobile': '?1',
+            'sec-ch-ua-platform': '"Android"',
+            'sec-fetch-dest': 'empty',
+            'sec-fetch-mode': 'cors',
+            'sec-fetch-site': 'cross-site',
+            'user-agent': UserAgent(os='android').random
+        }
         self.session = aiohttp.ClientSession(headers=headers, trust_env=True, connector=aiohttp.TCPConnector(verify_ssl=False,limit=1,force_close=True))
 
     async def main(self):
@@ -62,7 +76,7 @@ class Cats:
     
     async def stats(self):
         await self.login()
-        resp = await self.session.get('https://cats-backend-wkejfn-production.up.railway.app/user',proxy=self.proxy)
+        resp = await self.session.get('https://cats-backend-cxblew-prod.up.railway.app/user',proxy=self.proxy)
         resp = await resp.json()
         await self.session.close()
         return {'id':resp['id'],'username':resp['username'],'age':resp['telegramAge'],'total':resp['totalRewards']}
@@ -77,8 +91,7 @@ class Cats:
             params = {
                 'referral_code': self.ref,
             }
-            
-            resp = await self.session.post("https://cats-backend-wkejfn-production.up.railway.app/user/create", params=params,proxy=self.proxy)
+            resp = await self.session.post("https://cats-backend-cxblew-prod.up.railway.app/user/create", params=params,proxy=self.proxy)
             resp = await resp.text()
             if 'message' in resp:
                 return False
@@ -93,12 +106,9 @@ class Cats:
         try:
             await self.client.connect()
 
-            bot = await self.client.resolve_peer('catsgang_bot')
-            app = InputBotAppShortName(bot_id=bot, short_name="join")
-            
             web_view = await self.client.invoke(RequestAppWebView(
-                peer=bot,
-                app=app,
+                peer=await self.client.resolve_peer('catsgang_bot'),
+                app=InputBotAppShortName(bot_id=await self.client.resolve_peer('catsgang_bot'), short_name="join"),
                 platform='android',
                 write_allowed=True,
                 start_param=self.ref
@@ -122,11 +132,11 @@ class Cats:
         params = {
             'group':'cats'
         }
-        resp = await self.session.get('https://cats-backend-wkejfn-production.up.railway.app/tasks/user', params=params,proxy=self.proxy)
+        resp = await self.session.get('https://cats-backend-cxblew-prod.up.railway.app/tasks/user', params=params,proxy=self.proxy)
         resp_json = await resp.json()
         try:
             for task in resp_json['tasks']:
-                if task['id'] in [36,45,5,4,3,2]:
+                if task['id'] in [36,45,5,4,3,2,49]:
                     continue
                 if not task['completed']:
                     if task['type'] == 'SUBSCRIBE_TO_CHANNEL':
@@ -138,21 +148,21 @@ class Cats:
                                 await self.client.join_chat(link.replace('https://t.me/',''))
                             await asyncio.sleep(random.uniform(*config.MINI_SLEEP))
                             
-                            response = await self.session.post(f'https://cats-backend-wkejfn-production.up.railway.app/tasks/{task["id"]}/check', proxy=self.proxy)
-                            response = await self.session.post(f'https://cats-backend-wkejfn-production.up.railway.app/tasks/{task["id"]}/complete', proxy=self.proxy)
+                            response = await self.session.post(f'https://cats-backend-cxblew-prod.up.railway.app/tasks/{task["id"]}/check', proxy=self.proxy)
+                            response = await self.session.post(f'https://cats-backend-cxblew-prod.up.railway.app/tasks/{task["id"]}/complete', proxy=self.proxy)
                             logger.success(f"do_task | Thread {self.thread} | {self.name} | Claim task {task['title']}")
                             await asyncio.sleep(random.uniform(*config.TASK_SLEEP))
                     else:
-                        response = await self.session.post(f'https://cats-backend-wkejfn-production.up.railway.app/tasks/{task["id"]}/complete', proxy=self.proxy)
+                        response = await self.session.post(f'https://cats-backend-cxblew-prod.up.railway.app/tasks/{task["id"]}/complete', proxy=self.proxy)
                         resp = await response.json()
                         if resp['success']:
                             logger.success(f"do_task | Thread {self.thread} | {self.name} | Claim task {task['title']}")
                         await asyncio.sleep(random.uniform(*config.TASK_SLEEP))
-                tasks = await self.session.get('https://cats-backend-wkejfn-production.up.railway.app/tasks/user?group=bitget',proxy=self.proxy)
+                tasks = await self.session.get('https://cats-backend-cxblew-prod.up.railway.app/tasks/user?group=bitget',proxy=self.proxy)
                 tasks = (await tasks.json())['tasks']
                 for task in tasks:
                     if not task['completed']:
-                        response = await self.session.post(f'https://cats-backend-wkejfn-production.up.railway.app/tasks/{task["id"]}/complete', proxy=self.proxy)
+                        response = await self.session.post(f'https://cats-backend-cxblew-prod.up.railway.app/tasks/{task["id"]}/complete', proxy=self.proxy)
                         response = (await response.json())
                         if response['success']:
                             logger.success(f"do_task | Thread {self.thread} | {self.name} | Claim task {task['title']}")
