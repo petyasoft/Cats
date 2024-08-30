@@ -52,7 +52,7 @@ class Cats:
             'sec-fetch-site': 'cross-site',
             'user-agent': UserAgent(os='android').random
         }
-        self.session = aiohttp.ClientSession(headers=headers, trust_env=True, connector=aiohttp.TCPConnector(verify_ssl=False,limit=1,force_close=True))
+        self.session = aiohttp.ClientSession(headers=headers, trust_env=True, connector=aiohttp.TCPConnector(verify_ssl=False))
 
     async def main(self):
         try:
