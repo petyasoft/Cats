@@ -42,17 +42,18 @@ class Cats:
             'accept-language': 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7,bg;q=0.6,mk;q=0.5',
             'cache-control': 'no-cache',
             'content-type': 'application/json',
+            'origin': 'https://cats-frontend.tgapps.store',
             'pragma': 'no-cache',
             'priority': 'u=1, i',
+            'referer': 'https://cats-frontend.tgapps.store/',
             'sec-ch-ua': '"Not)A;Brand";v="99", "Google Chrome";v="122", "Chromium";v="122"',
             'sec-ch-ua-mobile': '?1',
             'sec-ch-ua-platform': '"Android"',
             'sec-fetch-dest': 'empty',
             'sec-fetch-mode': 'cors',
             'sec-fetch-site': 'cross-site',
-            'user-agent': UserAgent(os='android').random
-        }
-        self.session = aiohttp.ClientSession(headers=headers, trust_env=True, connector=aiohttp.TCPConnector(verify_ssl=False))
+            'user-agent': UserAgent(os='android').random}
+        self.session = aiohttp.ClientSession(headers=headers, trust_env=True, connector=aiohttp.TCPConnector(verify_ssl=False,limit=1,force_close=True))
 
     async def main(self):
         try:
@@ -136,39 +137,54 @@ class Cats:
         resp_json = await resp.json()
         try:
             for task in resp_json['tasks']:
-                if task['id'] in [36,45,5,4,3,2,49]:
+                if task['id'] in [4,3,2,57]:
                     continue
                 if not task['completed']:
                     if task['type'] == 'SUBSCRIBE_TO_CHANNEL':
                         link = task['params']['channelUrl']
+                        if 'https://t.me/+' in link:
+                            continue
                         async with self.client:
                             try:
-                                await self.client.join_chat(link)
+                                await self.client.join_chat(task)
                             except:
                                 await self.client.join_chat(link.replace('https://t.me/',''))
                             await asyncio.sleep(random.uniform(*config.MINI_SLEEP))
-                            
-                            response = await self.session.post(f'https://cats-backend-cxblew-prod.up.railway.app/tasks/{task["id"]}/check', proxy=self.proxy)
-                            response = await self.session.post(f'https://cats-backend-cxblew-prod.up.railway.app/tasks/{task["id"]}/complete', proxy=self.proxy)
-                            logger.success(f"do_task | Thread {self.thread} | {self.name} | Claim task {task['title']}")
-                            await asyncio.sleep(random.uniform(*config.TASK_SLEEP))
+                            try:
+                                response = await self.session.post(f'https://cats-backend-cxblew-prod.up.railway.app/tasks/{task["id"]}/check', proxy=self.proxy)
+                                json_data = {}
+                                response = await self.session.post(f'https://cats-backend-cxblew-prod.up.railway.app/tasks/{task["id"]}/complete', proxy=self.proxy, json=json_data)
+                                response = await response.json()
+                                if response['success']:
+                                    logger.success(f"do_task | Thread {self.thread} | {self.name} | Claim task {task['title']}")
+                                await asyncio.sleep(random.uniform(*config.TASK_SLEEP))
+                            except Exception as err:
+                                logger.error(f"tasks | Thread {self.thread} | {self.name} | {err}")
                     else:
-                        response = await self.session.post(f'https://cats-backend-cxblew-prod.up.railway.app/tasks/{task["id"]}/complete', proxy=self.proxy)
-                        resp = await response.json()
-                        if resp['success']:
-                            logger.success(f"do_task | Thread {self.thread} | {self.name} | Claim task {task['title']}")
+                        try:
+                            json_data = {}
+                            response = await self.session.post(f'https://cats-backend-cxblew-prod.up.railway.app/tasks/{task["id"]}/complete', proxy=self.proxy, json=json_data)
+                            resp = await response.json()
+                            if resp['success']:
+                                logger.success(f"do_task | Thread {self.thread} | {self.name} | Claim task {task['title']}")
+                        except Exception as err:
+                            logger.error(f"tasks | Thread {self.thread} | {self.name} | {err}")
                         await asyncio.sleep(random.uniform(*config.TASK_SLEEP))
                 tasks = await self.session.get('https://cats-backend-cxblew-prod.up.railway.app/tasks/user?group=bitget',proxy=self.proxy)
                 tasks = (await tasks.json())['tasks']
                 for task in tasks:
                     if not task['completed']:
-                        response = await self.session.post(f'https://cats-backend-cxblew-prod.up.railway.app/tasks/{task["id"]}/complete', proxy=self.proxy)
-                        response = (await response.json())
+                        try:
+                            json_data = {}
+                            response = await self.session.post(f'https://cats-backend-cxblew-prod.up.railway.app/tasks/{task["id"]}/complete', proxy=self.proxy, json=json_data)
+                            response = (await response.json())
+                        except Exception as err:
+                            logger.error(f"tasks | Thread {self.thread} | {self.name} | {err}")
                         if response['success']:
                             logger.success(f"do_task | Thread {self.thread} | {self.name} | Claim task {task['title']}")
                         await asyncio.sleep(random.uniform(*config.TASK_SLEEP))
                         
         except Exception as err:
-            logger.error(f"tasks | Thread {self.thread} | {self.name} | {err}")
+            logger.error(f"tasks | Thread {self.thread} | {self.name} | {err} {task}")
     
  
