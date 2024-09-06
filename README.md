@@ -63,7 +63,7 @@
 
 ---
 
-Thank you for using Blum Telegram Bot! Don't forget to follow our [Telegram channel](https://t.me/petyasofts) for updates.
+Thank you for using Cats Telegram Bot! Don't forget to follow our [Telegram channel](https://t.me/petyasofts) for updates.
 
 Ton wallet for donations : UQCLxqnBscAH1i8WNU2qfqXrAKCd5AoNgbuNrvZHTZOLI3Yg
 
