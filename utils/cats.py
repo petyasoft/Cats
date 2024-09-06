@@ -137,7 +137,7 @@ class Cats:
         resp_json = await resp.json()
         try:
             for task in resp_json['tasks']:
-                if task['id'] in [4,3,2,57]:
+                if task['id'] in [5,4,3,2,57]:
                     continue
                 if not task['completed']:
                     if task['type'] == 'SUBSCRIBE_TO_CHANNEL':
