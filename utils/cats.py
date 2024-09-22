@@ -42,10 +42,8 @@ class Cats:
             'accept-language': 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7,bg;q=0.6,mk;q=0.5',
             'cache-control': 'no-cache',
             'content-type': 'application/json',
-            'origin': 'https://cats-frontend.tgapps.store',
             'pragma': 'no-cache',
             'priority': 'u=1, i',
-            'referer': 'https://cats-frontend.tgapps.store/',
             'sec-ch-ua': '"Not)A;Brand";v="99", "Google Chrome";v="122", "Chromium";v="122"',
             'sec-ch-ua-mobile': '?1',
             'sec-ch-ua-platform': '"Android"',
@@ -53,7 +51,7 @@ class Cats:
             'sec-fetch-mode': 'cors',
             'sec-fetch-site': 'cross-site',
             'user-agent': UserAgent(os='android').random}
-        self.session = aiohttp.ClientSession(headers=headers, trust_env=True, connector=aiohttp.TCPConnector(verify_ssl=False))
+        self.session = aiohttp.ClientSession(headers=headers, trust_env=True, connector=aiohttp.TCPConnector(verify_ssl=False,limit=1,force_close=True))
 
     async def main(self):
         try:
@@ -77,7 +75,8 @@ class Cats:
     
     async def stats(self):
         await self.login()
-        resp = await self.session.get('https://cats-backend-cxblew-prod.up.railway.app/user',proxy=self.proxy)
+        
+        resp = await self.session.get('https://api.catshouse.club/user',proxy=self.proxy)
         resp = await resp.json()
         await self.session.close()
         return {'id':resp['id'],'username':resp['username'],'age':resp['telegramAge'],'total':resp['totalRewards']}
@@ -92,7 +91,7 @@ class Cats:
             params = {
                 'referral_code': self.ref,
             }
-            resp = await self.session.post("https://cats-backend-cxblew-prod.up.railway.app/user/create", params=params,proxy=self.proxy)
+            resp = await self.session.post("https://api.catshouse.club/user/create", params=params,proxy=self.proxy)
             resp = await resp.text()
             if 'message' in resp:
                 return False
@@ -133,58 +132,32 @@ class Cats:
         params = {
             'group':'cats'
         }
-        resp = await self.session.get('https://cats-backend-cxblew-prod.up.railway.app/tasks/user', params=params,proxy=self.proxy)
+        resp = await self.session.get('https://api.catshouse.club/tasks/user', params=params,proxy=self.proxy)
         resp_json = await resp.json()
         try:
             for task in resp_json['tasks']:
-                if task['id'] in [5,4,3,2,57]:
+                if task['id'] in config.BLACKLIST:
                     continue
-                if not task['completed']:
-                    if task['type'] == 'SUBSCRIBE_TO_CHANNEL':
-                        link = task['params']['channelUrl']
-                        if 'https://t.me/+' in link:
-                            continue
-                        async with self.client:
-                            try:
-                                await self.client.join_chat(task)
-                            except:
-                                await self.client.join_chat(link.replace('https://t.me/',''))
-                            await asyncio.sleep(random.uniform(*config.MINI_SLEEP))
-                            try:
-                                response = await self.session.post(f'https://cats-backend-cxblew-prod.up.railway.app/tasks/{task["id"]}/check', proxy=self.proxy)
-                                json_data = {}
-                                response = await self.session.post(f'https://cats-backend-cxblew-prod.up.railway.app/tasks/{task["id"]}/complete', proxy=self.proxy, json=json_data)
-                                response = await response.json()
-                                if response['success']:
-                                    logger.success(f"do_task | Thread {self.thread} | {self.name} | Claim task {task['title']}")
-                                await asyncio.sleep(random.uniform(*config.TASK_SLEEP))
-                            except Exception as err:
-                                logger.error(f"tasks | Thread {self.thread} | {self.name} | {err}")
-                    else:
-                        try:
-                            json_data = {}
-                            response = await self.session.post(f'https://cats-backend-cxblew-prod.up.railway.app/tasks/{task["id"]}/complete', proxy=self.proxy, json=json_data)
-                            resp = await response.json()
-                            if resp['success']:
-                                logger.success(f"do_task | Thread {self.thread} | {self.name} | Claim task {task['title']}")
-                        except Exception as err:
-                            logger.error(f"tasks | Thread {self.thread} | {self.name} | {err}")
-                        await asyncio.sleep(random.uniform(*config.TASK_SLEEP))
-                tasks = await self.session.get('https://cats-backend-cxblew-prod.up.railway.app/tasks/user?group=bitget',proxy=self.proxy)
-                tasks = (await tasks.json())['tasks']
-                for task in tasks:
+                try:
                     if not task['completed']:
-                        try:
-                            json_data = {}
-                            response = await self.session.post(f'https://cats-backend-cxblew-prod.up.railway.app/tasks/{task["id"]}/complete', proxy=self.proxy, json=json_data)
-                            response = (await response.json())
-                        except Exception as err:
-                            logger.error(f"tasks | Thread {self.thread} | {self.name} | {err}")
-                        if response['success']:
-                            logger.success(f"do_task | Thread {self.thread} | {self.name} | Claim task {task['title']}")
-                        await asyncio.sleep(random.uniform(*config.TASK_SLEEP))
-                        
+                        if task['type'] == 'SUBSCRIBE_TO_CHANNEL':
+                            continue
+                        else:
+                            try:
+                                json_data = {}
+                                response = await self.session.post(f'https://api.catshouse.club/tasks/{task["id"]}/complete', proxy=self.proxy, json=json_data)
+                                resp = await response.json()
+                                if resp['success']:
+                                    logger.success(f"do_task | Thread {self.thread} | {self.name} | Claim task {task['title']}")
+                                else:
+                                    logger.error(f"do_task | Thread {self.thread} | {self.name} | task {task['id']} {resp}")
+                            except Exception as err:
+                                logger.error(f"tasks | Thread {self.thread} | {self.name} | {err} TASK_ID : {task['id']}")
+                            await asyncio.sleep(random.uniform(*config.TASK_SLEEP))
+                except Exception as err:
+                    logger.error(f"tasks | Thread {self.thread} | {self.name} | {err} TASK_ID : {task['id']}")
+                            
         except Exception as err:
-            logger.error(f"tasks | Thread {self.thread} | {self.name} | {err} {task}")
+            logger.error(f"tasks | Thread {self.thread} | {self.name} | {err} {task} TASK_ID : {task['id']}")
     
  
