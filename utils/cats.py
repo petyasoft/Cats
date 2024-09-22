@@ -74,12 +74,15 @@ class Cats:
             await self.session.close()
     
     async def stats(self):
-        await self.login()
-        
-        resp = await self.session.get('https://api.catshouse.club/user',proxy=self.proxy)
-        resp = await resp.json()
-        await self.session.close()
-        return {'id':resp['id'],'username':resp['username'],'age':resp['telegramAge'],'total':resp['totalRewards']}
+        try:
+            await self.login()
+            
+            resp = await self.session.get('https://api.catshouse.club/user',proxy=self.proxy)
+            resp = await resp.json()
+            await self.session.close()
+            return {'id':resp['id'],'username':resp['username'],'age':resp['telegramAge'],'total':resp['totalRewards']}
+        except:
+            return {'id':0,'username':'NONE','age':0,'total':0}
 
     async def login(self):
         try:
