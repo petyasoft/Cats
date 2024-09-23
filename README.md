@@ -89,6 +89,5 @@ zec   : t1aFA4poLSA6psJ1pbsK63MeXKQ6ECkqz5M
 
 Thank you for using Cats Telegram Bot! Don't forget to follow our [Telegram channel](https://t.me/petyasofts) for updates.
 
-Ton wallet for donations : UQCLxqnBscAH1i8WNU2qfqXrAKCd5AoNgbuNrvZHTZOLI3Yg
 
 
