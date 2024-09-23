@@ -29,7 +29,7 @@
      USE_PROXY = True  # or False
      ```
   
-   - if you want a task with pictures to be performed, then you need to create a photos folder and upload photos to it
+   - if you want a task with pictures to be performed, then you need to create a "photos" folder and upload photos to it
       ```python
       DO_PHOTOS = True
       ```
