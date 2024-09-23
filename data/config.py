@@ -7,7 +7,7 @@ BOT_TOKEN = '' # your bot token from BotFather
 CHAT_ID = '' # your user id
 
 # задержка между подключениями к аккаунтам
-ACC_DELAY = [1, 50] #[min,max] seconds
+ACC_DELAY = [1, 5] #[min,max] seconds
 
 # тип прокси
 PROXY_TYPE = "socks5" # http/socks5
@@ -27,8 +27,11 @@ TASK_SLEEP = [20, 40] #[min,max]
 # мини задержки
 MINI_SLEEP = [1,20]
 
-# айди тасков которые будут пропускаться
+# черный список айди тасков которые требуют проверку
 BLACKLIST = [2, 3, 4, 5, 99, 104, 105]
+
+# делать задание с картинками True/False
+DO_PHOTOS = True
 
 hello ='''              _                               __  _        
  _ __    ___ | |_  _   _   __ _  ___   ___   / _|| |_  ___ 
