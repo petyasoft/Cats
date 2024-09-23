@@ -28,6 +28,11 @@
      ```python
      USE_PROXY = True  # or False
      ```
+  
+   - if you want a task with pictures to be performed, then you need to create a photos folder and upload photos to it
+      ```python
+      DO_PHOTOS = True
+      ```
 
    - If `USE_PROXY` is `True`, open `proxy.txt` and fill it out using the example provided. Ensure there are no extra lines in the file.
    Proxy format : ip:port:login:password session_name, session name is which use this proxy (WITHOUT .session, only session name)
