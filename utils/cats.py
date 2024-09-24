@@ -177,15 +177,17 @@ class Cats:
         response = await response.json()
         del self.session.headers['content-type']
         if resp['hasOgPass'] and response['attemptsUsed']<3:
-            file_info = self.get_random_image() 
-            with open(file_info[0], 'rb') as file:
-                form_data = aiohttp.FormData()
-                form_data.add_field('photo', file, filename=file_info[1], content_type='image/jpeg')
-                
-                photo_resp = await self.session.post('https://api.catshouse.club/user/avatar/upgrade', data=form_data, proxy=self.proxy)
-                response_text = await photo_resp.json()
-                if 'rewards' in response_text:
-                    logger.success(f"avatar | Thread {self.thread} | {self.name} | UPLOAD {file_info[1]} and claim {response_text['rewards']}")
+            for _ in range(3-response['attemptsUsed']):
+                file_info = self.get_random_image() 
+                with open(file_info[0], 'rb') as file:
+                    form_data = aiohttp.FormData()
+                    form_data.add_field('photo', file, filename=file_info[1], content_type='image/jpeg')
+                    
+                    photo_resp = await self.session.post('https://api.catshouse.club/user/avatar/upgrade', data=form_data, proxy=self.proxy)
+                    response_text = await photo_resp.json()
+                    if 'rewards' in response_text:
+                        logger.success(f"avatar | Thread {self.thread} | {self.name} | UPLOAD {file_info[1]} and claim {response_text['rewards']}")
+
 
         elif response['attemptsUsed']<1:
             file_info = self.get_random_image() 
