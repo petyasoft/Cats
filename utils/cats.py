@@ -175,9 +175,33 @@ class Cats:
         
         response = await self.session.get('https://api.catshouse.club/user/avatar',proxy=self.proxy)
         response = await response.json()
-        del self.session.headers['content-type']
-        if resp['hasOgPass'] and response['attemptsUsed']<3:
-            for _ in range(3-response['attemptsUsed']):
+        
+        
+        if response['attemptTime'] != None:
+            current_time_utc = datetime.now(timezone.utc)
+            timestamp_str = response['attemptTime']
+            timestamp_dt = datetime.strptime(timestamp_str, '%Y-%m-%dT%H:%M:%S.%fZ').replace(tzinfo=timezone.utc)
+            time_difference = current_time_utc - timestamp_dt
+            hours_passed = time_difference >= timedelta(hours=24)
+        else:
+            hours_passed = True
+        
+        if hours_passed:
+            del self.session.headers['content-type']
+            if resp['hasOgPass']:
+                for _ in range(3):
+                    file_info = self.get_random_image() 
+                    with open(file_info[0], 'rb') as file:
+                        form_data = aiohttp.FormData()
+                        form_data.add_field('photo', file, filename=file_info[1], content_type='image/jpeg')
+                        
+                        photo_resp = await self.session.post('https://api.catshouse.club/user/avatar/upgrade', data=form_data, proxy=self.proxy)
+                        response_text = await photo_resp.json()
+                        if 'rewards' in response_text:
+                            logger.success(f"avatar | Thread {self.thread} | {self.name} | UPLOAD {file_info[1]} and claim {response_text['rewards']}")
+                        await asyncio.sleep(random.uniform(*config.MINI_SLEEP))
+
+            else:
                 file_info = self.get_random_image() 
                 with open(file_info[0], 'rb') as file:
                     form_data = aiohttp.FormData()
@@ -187,20 +211,7 @@ class Cats:
                     response_text = await photo_resp.json()
                     if 'rewards' in response_text:
                         logger.success(f"avatar | Thread {self.thread} | {self.name} | UPLOAD {file_info[1]} and claim {response_text['rewards']}")
-                    await asyncio.sleep(random.uniform(*config.MINI_SLEEP))
-
-
-        elif response['attemptsUsed']<1:
-            file_info = self.get_random_image() 
-            with open(file_info[0], 'rb') as file:
-                form_data = aiohttp.FormData()
-                form_data.add_field('photo', file, filename=file_info[1], content_type='image/jpeg')
-                
-                photo_resp = await self.session.post('https://api.catshouse.club/user/avatar/upgrade', data=form_data, proxy=self.proxy)
-                response_text = await photo_resp.json()
-                if 'rewards' in response_text:
-                    logger.success(f"avatar | Thread {self.thread} | {self.name} | UPLOAD {file_info[1]} and claim {response_text['rewards']}")
-        self.session.headers['content-type'] = 'application/json'
+            self.session.headers['content-type'] = 'application/json'
             
     def get_random_image(self):
         image_folder = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'photos'))
