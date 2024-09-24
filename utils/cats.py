@@ -187,6 +187,7 @@ class Cats:
                     response_text = await photo_resp.json()
                     if 'rewards' in response_text:
                         logger.success(f"avatar | Thread {self.thread} | {self.name} | UPLOAD {file_info[1]} and claim {response_text['rewards']}")
+                    await asyncio.sleep(random.uniform(*config.MINI_SLEEP))
 
 
         elif response['attemptsUsed']<1:
