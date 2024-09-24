@@ -15,7 +15,7 @@ PROXY_TYPE = "socks5" # http/socks5
 # папка с сессиями (не менять)
 WORKDIR = "sessions/"
 
-# реф код
+# реф код идет после startapp=
 REF_CODE = ''
 
 # использовать прокси
