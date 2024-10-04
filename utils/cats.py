@@ -14,6 +14,7 @@ import asyncio
 import random
 import os
 
+
 class Cats:
     def __init__(self, thread: int, account: str, proxy : str):
         self.thread = thread
@@ -67,9 +68,13 @@ class Cats:
                         logger.error(f"main | Thread {self.thread} | {self.name} | {err}")
                         self.session.close()
                         return 0
+
+                    await asyncio.sleep(random.uniform(*config.MINI_SLEEP))
+                    await self.do_tasks()
+                    
                     if config.DO_PHOTOS:
                         await self.get_avatar()
-                    await self.do_tasks()
+                    
                     await asyncio.sleep(random.uniform(24*60*60,26*60*60))
                 except Exception as err:
                     logger.error(f"main | Thread {self.thread} | {self.name} | {err}")
@@ -113,7 +118,6 @@ class Cats:
     async def get_tg_web_data(self):
         try:
             await self.client.connect()
-
             web_view = await self.client.invoke(RequestAppWebView(
                 peer=await self.client.resolve_peer('catsgang_bot'),
                 app=InputBotAppShortName(bot_id=await self.client.resolve_peer('catsgang_bot'), short_name="join"),
@@ -229,6 +233,26 @@ class Cats:
                                             logger.success(f"do_task | Thread {self.thread} | {self.name} | Claim task (WEI) YOUTUBE")
                                         else:
                                             logger.error(f"do_task | Thread {self.thread} | {self.name} | task (WEI) YOUTUBE {resp}")
+                                    
+                                    elif task['id'] == 155:
+                                        json_data = {}
+                                        response = await self.session.post(f'https://api.catshouse.club/tasks/155/complete?answer=AUDIT', proxy=self.proxy, json=json_data)
+                                        resp = await response.json()
+                                        if resp['success']:
+                                            logger.success(f"do_task | Thread {self.thread} | {self.name} | Claim task (AUDIT) YOUTUBE")
+                                        else:
+                                            logger.error(f"do_task | Thread {self.thread} | {self.name} | task (AUDIT) YOUTUBE {resp}")
+                                    
+                                    elif task['id'] == 154:
+                                        json_data = {}
+                                        response = await self.session.post(f'https://api.catshouse.club/tasks/154/complete?answer=AUCTION', proxy=self.proxy, json=json_data)
+                                        resp = await response.json()
+                                        if resp['success']:
+                                            logger.success(f"do_task | Thread {self.thread} | {self.name} | Claim task (AUCTION) YOUTUBE")
+                                        else:
+                                            logger.error(f"do_task | Thread {self.thread} | {self.name} | task (AUCTION) YOUTUBE {resp}")
+                                            
+                                            
                                 except Exception as err:
                                     logger.error(f"tasks | Thread {self.thread} | {self.name} | {err} TASK_ID : {task['id']}")      
                             else:
@@ -248,6 +272,8 @@ class Cats:
                             
         except Exception as err:
             logger.error(f"tasks | Thread {self.thread} | {self.name} | {err} {task} TASK_ID : {task['id']}")
+        
+        
     
     
     async def get_avatar(self):
