@@ -12,9 +12,13 @@ async def create_sessions():
         
         if USE_PROXY:
             proxy_dict = {}
-            with open('proxy.txt','r') as file:
-                proxy_list = [i.strip().split() for i in file.readlines() if len(i.strip().split()) == 2]
-                for prox,name in proxy_list:
+            with open('proxy.txt','r',encoding='utf-8') as file:
+                list = [i.strip().split() for i in file.readlines()]
+                proxy = []
+                for info in list:
+                    if info!=[]:
+                        proxy.append((info[0],' '.join(info[1:]).replace('.session','')))
+                for prox,name in proxy:
                     proxy_dict[name] = prox
             
             if session_name in proxy_dict:
