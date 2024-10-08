@@ -51,6 +51,9 @@ class Accounts:
 
                         await client.disconnect()
                     else:
+                        if config.CHECK_PROXY:
+                            logger.error(f"{session}.session ПРОКСИ НЕ НАЙДЕН")
+                            continue
                         client = Client(name=session, api_id=self.api_id, api_hash=self.api_hash, workdir=self.workdir)
 
                         if await client.connect():
