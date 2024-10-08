@@ -20,6 +20,8 @@ REF_CODE = ''
 
 # использовать прокси
 USE_PROXY = True # True/False
+# проверять прокси
+CHECK_PROXY = True
 
 # задержка в секундах между выполнеными тасками
 TASK_SLEEP = [20, 40] #[min,max] 
