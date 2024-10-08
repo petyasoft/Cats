@@ -28,7 +28,7 @@ class Accounts:
                 proxy_list = []
                 for info in list:
                     if info!=[]:
-                        proxy_list.append((info[0],' '.join(info[1:]).replace('.session','')))
+                        proxy_list.append((info[0],''.join(info[1:]).replace('.session','')))
                 for prox,name in proxy_list:
                     proxy_dict[name] = prox
             for session in sessions:
