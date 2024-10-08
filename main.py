@@ -54,7 +54,7 @@ async def main():
                 proxy = []
                 for info in list:
                     if info!=[]:
-                        proxy.append((info[0],' '.join(info[1:]).replace('.session','')))
+                        proxy.append((info[0],''.join(info[1:]).replace('.session','')))
             for thread, account in enumerate(accounts):
                 if account in proxy_dict:
                     tasks.append(asyncio.create_task(Cats(account=account, thread=thread, proxy=proxy_dict[account]).stats()))
