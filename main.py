@@ -28,7 +28,7 @@ async def main():
                 proxy = []
                 for info in list:
                     if info!=[]:
-                        proxy.append((info[0],' '.join(info[1:]).replace('.session','')))
+                        proxy.append((info[0],''.join(info[1:]).replace('.session','')))
                 for prox,name in proxy:
                     proxy_dict[name] = prox
             for thread, account in enumerate(accounts):
