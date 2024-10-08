@@ -1,7 +1,8 @@
+
 from utils.core import create_sessions
 from utils.telegram import Accounts
 from utils.cats import Cats
-from data.config import hello,USE_PROXY
+from data.config import hello,USE_PROXY,CHECK_PROXY
 import asyncio
 import os
 import csv
@@ -34,6 +35,8 @@ async def main():
                 if account in proxy_dict:
                     tasks.append(asyncio.create_task(Cats(account=account, thread=thread, proxy=proxy_dict[account]).main()))
                 else:
+                    if CHECK_PROXY:
+                        continue
                     tasks.append(asyncio.create_task(Cats(account=account, thread=thread,proxy = None).main()))
         else:
             for thread, account in enumerate(accounts):
@@ -56,6 +59,8 @@ async def main():
                 if account in proxy_dict:
                     tasks.append(asyncio.create_task(Cats(account=account, thread=thread, proxy=proxy_dict[account]).stats()))
                 else:
+                    if CHECK_PROXY:
+                        continue
                     tasks.append(asyncio.create_task(Cats(account=account, thread=thread,proxy = None).stats()))
         else:
             for thread, account in enumerate(accounts):
