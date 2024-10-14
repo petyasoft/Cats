@@ -4,6 +4,7 @@
 ## Requirements
 - Python 3.11 (you can install it [here](https://www.python.org/downloads/release/python-3110/))
 - Telegram API_ID and API_HASH (you can get them [here](https://my.telegram.org/auth?to=apps))
+- Reddit account, API, and secret (you can get them [here](https://www.reddit.com/prefs/apps))
 
 
 
@@ -48,6 +49,8 @@
    ```
 
 5. IMPORTANT Create a `sessions` folder
+
+6. To get cat photos using CatPhotosFromReddit.py, you need to register a Reddit account and create an app to obtain the Reddit API client ID and secret. Visit [Reddit Apps](https://www.reddit.com/prefs/apps) to generate these credentials.
 
 
 
